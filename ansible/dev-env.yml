@@ -1,0 +1,8 @@
+---
+# This playbook will setup my dev env
+- hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    - include_tasks: core-setup.yml
+    - include_tasks: user-setup.yml

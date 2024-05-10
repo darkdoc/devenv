@@ -1,0 +1,4 @@
+- name: Install System Packages 
+  become: true
+  ansible.builtin.package:
+    name: "{{ lookup('ansible.builtin.vars', ansible_facts['distribution'] | lower + '_package_list')}}"

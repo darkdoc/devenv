@@ -57,7 +57,7 @@ function install_deb {
     info "Installing ansible"
     pip install ansible
     info "$dist_type"
-    ansible-playbook playbook.yml
+    ansible-playbook ansible/dev-env.yml
 }
 
 #function install_rpm {
