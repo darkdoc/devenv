@@ -33,24 +33,25 @@ fi
 
 function install_deb {
     info "Installing python3,pip,git..."
-    sudo apt install python3 python3-pip git -y
+    export DEBIAN_FRONTEND=noninteractive
+    sudo apt-get update
+    sudo apt-get install python3-full python3-pip git -y\
+            --no-install-suggests\
+            --no-install-recommends
     
     info "Cloning devenv repo ... (this might override any prev devenv cloned)"
     if [ -d $REPO_PATH ]; then 
         warning "Directory $REPO_PATH exists. Fetching there anyways..."
-        cd $REPO_PATH
         git init --initial-branch=main
         git remote add origin $REPO_URL
         git pull -f   || error "Git pull failed"
     else
         git clone "$REPO_URL" "$REPO_PATH" || error "Git clone failed"
-        cd $REPO_PATH
     fi
-
+    cd $REPO_PATH
     info "Installing venv for user..."
 
-    python3 -m pip install --user virtualenv
-    virtualenv venv
+    python3 -m venv venv
     . venv/bin/activate
 
     info "Installing ansible"
