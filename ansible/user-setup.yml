@@ -14,3 +14,27 @@
     content: "{{ username }} ALL=(ALL) NOPASSWD:ALL"
     mode: 0440
     validate: 'visudo -cf %s'
+  
+- name: Install Oh-my-zsh to user
+  block:
+  - name: Download Oh My Zsh installation script
+    ansible.builtin.get_url:
+      url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+      dest: /tmp/install_ohmyzsh.sh
+
+  - name: Run Oh My Zsh installation script
+    become: true
+    become_user: "{{ username }}"
+    command: sh /tmp/install_ohmyzsh.sh --unattended
+    register: ohmyzsh_result
+    failed_when: "'FAILED' in ohmyzsh_result.stderr"
+    args:
+      creates: "/home/{{ username }}/.oh-my-zsh"
+   
+  rescue:
+  - name: Cleanup after failed install
+    become: true
+    become_user: "{{ username }}"
+    ansible.builtin.file:
+      path: "/home/{{ username }}/.oh-my-zsh"
+      state: absent
