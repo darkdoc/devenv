@@ -1,6 +1,5 @@
 ---
 username: darkdoc
 ubuntu_package_list:
-  - docker
   - neofetch
   - zsh
