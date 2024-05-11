@@ -39,15 +39,17 @@ function install_deb {
             --no-install-suggests\
             --no-install-recommends
     
-    info "Cloning devenv repo ... (this might override any prev devenv cloned)"
+    info "Cloning devenv repo ... (this will override any prev devenv cloned)"
     if [ -d $REPO_PATH ]; then 
         warning "Directory $REPO_PATH exists. Fetching there anyways..."
-        git init --initial-branch=main
-        git remote add origin $REPO_URL
-        git pull -f   || error "Git pull failed"
-    else
-        git clone "$REPO_URL" "$REPO_PATH" || error "Git clone failed"
+        rm -rf $REPO_PATH
+        #git init --initial-branch=main
+        #git remote add origin $REPO_URL
+        #git pull -f   || error "Git pull failed"
+    #else
     fi
+    
+    git clone "$REPO_URL" "$REPO_PATH" || error "Git clone failed"
     cd $REPO_PATH
     info "Installing venv for user..."
 
