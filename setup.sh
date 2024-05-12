@@ -9,6 +9,9 @@ RESET=$(tput sgr0)
 REPO_URL=https://github.com/darkdoc/devenv.git
 REPO_PATH="$HOME/.devenv"
 
+DEVENV_DISTRO_TYPE=debian
+DEVENV_WITH_GUI=false
+
 function info {
   echo -e "Info: ${1}"
 }
@@ -31,7 +34,8 @@ if [[ $EUID -eq 0 ]]; then
    exit 1
 fi
 
-function install_deb {
+function install_debian {
+    command -v apt >/dev/null 2>&1 || error "apt not found"
     info "Installing python3,pip,git..."
     export DEBIAN_FRONTEND=noninteractive
     sudo apt-get update
@@ -58,30 +62,52 @@ function install_deb {
 
     info "Installing ansible"
     pip install ansible
-    info "$dist_type"
     ansible-playbook ansible/dev-env.yml
 }
 
-#function install_rpm {
-#    info "Installing pip..."
-#    python3 -m ensurepip --upgrade
-#}
 
-case "${1}" in
-  (--apt|--deb)
-    command -v apt >/dev/null 2>&1 || error "apt not found"
-    export dist_type="Debian"
-    echo "$dist_type"
-    install_deb
-  ;;
-  (--dnf|--rpm|--yum)
+function install_rhel {
     command -v yum >/dev/null 2>&1 || error "yum not found"
-    dist_type=RedHat
-    #install_rpm #TODO implement
-  ;;
-  (''|*)
-      info "No option given, defaulting to ubuntu/deb"
-      command -v apt >/dev/null 2>&1 || error "apt not found"
-      install_deb
-  ;;
-esac
+    info "Hello from rhel"
+    info "gui     = ${DEVENV_WITH_GUI}"
+}
+
+VALID_ARGS=$(getopt -o gd:u: --long gui,distro:,user: -- "$@")
+if [[ $? -ne 0 ]]; then
+    exit 1;
+fi
+
+eval set -- "$VALID_ARGS"
+while [ : ]; do
+  case "$1" in
+    -g | --gui)
+        if [[ $(grep -i Microsoft /proc/version) ]]; then
+            error "Bash is running on WSL, GUI install not supported"
+        fi
+        DEVENV_WITH_GUI=true
+        shift
+        ;;
+    -d | --distro)
+        if [[ $2 == "apt" || $2 == "deb" ]]; then
+            DEVENV_DISTRO_TYPE="debian"
+        elif [[ $2 == "yum" || $2 == "dnf" ]]; then
+            DEVENV_DISTRO_TYPE="rhel"
+        else
+            error "Disto not supported: $2"
+            exit 1
+        fi
+        shift 2
+        ;;
+    -u | --user)
+        DEVENV_USER=$2 
+        shift 2
+        ;;
+    --) shift; 
+        break 
+        ;;
+  esac
+done
+
+
+info "User to setup devenv: ${DEVENV_USER:-Not set with arg, will use ansible default value}"
+install_${DEVENV_DISTRO_TYPE}
