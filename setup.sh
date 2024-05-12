@@ -99,7 +99,7 @@ while [ : ]; do
         shift 2
         ;;
     -u | --user)
-        DEVENV_USER=$2 
+        export DEVENV_USER=$2 
         shift 2
         ;;
     --) shift; 
