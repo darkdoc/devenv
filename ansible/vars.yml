@@ -1,5 +1,5 @@
 ---
-username: darkdoc
+username: "{{ lookup('env','DEVENV_USER') or 'darkdoc' }}"
 ubuntu_package_list:
   - neofetch
   - zsh
