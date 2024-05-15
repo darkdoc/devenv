@@ -62,7 +62,7 @@ function install_debian {
 
     info "Installing ansible"
     pip install ansible
-    ansible-playbook ansible/dev-env.yml
+    ansible-playbook -i ansible/hosts ansible/dev-env.yml
 }
 
 
