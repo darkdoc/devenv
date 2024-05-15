@@ -1,0 +1,16 @@
+#These tasks will clone devenv to user home and 
+# install stow to manage dotfiles for user
+
+- name: Ensure Stow installed
+  become: yes
+  ansible.builtin.apt:
+    name: stow
+    state: present
+
+- name: Checkout devenv to user home
+  become: true
+  become_user: "{{ username }}"
+  ansible.builtin.git:
+    repo: "https://github.com/darkdoc/devenv.git"
+    dest: "/home/{{ username }}/.devenv"
+
