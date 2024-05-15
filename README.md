@@ -27,3 +27,5 @@ Currently done:
 - ansible setup, running in tmp dir with venv (#TODO make this tmp dir overrideable arg)
 - user setup (pwless sudo), zsh, oh-my-zsh install to user
 - docker-ce install, config for user
+- stow, dotfiles folder, tmux, tpm, and tmux config (#TODO fix font)
+
