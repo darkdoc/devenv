@@ -1,0 +1,33 @@
+# These tasks will install tpm, and tmux config
+# TODO change stow to newer, it has a fix for .config dir
+# https://github.com/aspiers/stow/issues/33
+# it would be nice to have not hidden folders in the repo
+# --dotfiles fix
+
+- name: Install tpm 
+  become: true
+  become_user: "{{ username }}"
+  ansible.builtin.git:
+    repo: "https://github.com/tmux-plugins/tpm"
+    dest: "/home/{{ username }}/.config/tmux/plugins/tpm"
+
+- name: Deploy tmux dotfiles
+  become: yes
+  become_user: "{{ username }}"
+  shell: |
+    stow -v -t ~/ tmux 
+  args:
+    chdir: "/home/{{ username }}/.devenv/dotfiles"
+    executable: /bin/bash
+  register: output
+  changed_when: '"LINK" in output.stderr'
+
+- name: Install tmux plugins
+  become: yes
+  become_user: "{{ username }}"
+  shell: |
+    /home/{{ username }}/.config/tmux/plugins/tpm/bin/install_plugins  
+  args:
+    executable: /bin/bash
+  register: output
+  changed_when: '"LINK" in output.stderr'

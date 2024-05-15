@@ -8,5 +8,6 @@
     - include_tasks: docker-setup.yml
     - include_tasks: user-setup.yml
     - include_tasks: dotenv-setup.yml
+    - include_tasks: tmux-setup.yml
 
 
