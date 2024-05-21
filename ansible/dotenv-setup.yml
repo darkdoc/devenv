@@ -14,3 +14,14 @@
     repo: "https://github.com/darkdoc/devenv.git"
     dest: "/home/{{ username }}/.devenv"
 
+- name: Deploy zsh dotfiles
+  become: true
+  become_user: "{{ username }}"
+  shell: |
+    stow -v -t ~/ zsh 
+  args:
+    chdir: "/home/{{ username }}/.devenv/dotfiles"
+    executable: /bin/bash
+  register: output
+  changed_when: '"LINK" in output.stderr'
+
