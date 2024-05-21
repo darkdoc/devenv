@@ -9,5 +9,6 @@
     - include_tasks: user-setup.yml
     - include_tasks: dotenv-setup.yml
     - include_tasks: tmux-setup.yml
+    - include_tasks: nvim-setup.yml
 
 

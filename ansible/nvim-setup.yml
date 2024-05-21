@@ -1,0 +1,42 @@
+# These tasks will install nvim, and nvim config
+- name: Create nvim folder
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - /home/{{ username }}/.local/share
+    - /home/{{ username }}/.local/bin
+
+#TODO: make this idempotent if version is same
+- name: Unarchive and download latest nvim release
+  become: true
+  ansible.builtin.unarchive:
+    src: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    dest: /home/{{ username }}/.local/share
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    remote_src: yes
+
+- name: Create a symbolic link
+  become: true
+  ansible.builtin.file:
+    src: /home/{{ username }}/.local/share/nvim-linux64/bin/nvim
+    dest: /home/{{ username }}/.local/bin/nvim
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    state: link
+
+- name: Deploy nvim dotfiles
+  become: true
+  become_user: "{{ username }}"
+  shell: |
+    stow -v -t ~/ nvim 
+  args:
+    chdir: "/home/{{ username }}/.devenv/dotfiles"
+    executable: /bin/bash
+  register: output
+  changed_when: '"LINK" in output.stderr'
+
