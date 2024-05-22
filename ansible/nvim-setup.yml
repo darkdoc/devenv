@@ -40,3 +40,14 @@
   register: output
   changed_when: '"LINK" in output.stderr'
 
+- name: Trigger neovim Lazy sync
+  become: true
+  become_user: "{{ username }}"
+  shell: |
+    source ${HOME}/.zshrc
+    nvim --headless "+Lazy! sync" +qa
+  args:
+    executable: /bin/zsh
+  register: lazy_sync_output
+  changed_when: '"All parsers are up-to-date!" in lazy_sync_output.stderr'
+
